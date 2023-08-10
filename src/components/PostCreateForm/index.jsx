@@ -1,10 +1,14 @@
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { PostContext } from "../../providers/PostContext";
 
 export const PostCreateForm = () => {
    const { register, handleSubmit } = useForm();
 
+    const { postCreate } = useContext(PostContext);
+
     const submit = (formData) => {
-        
+        postCreate(formData);
     }
 
     return(
