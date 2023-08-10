@@ -26,7 +26,7 @@ export const PostProvider = ({ children }) => {
 
          setPostList([...postList, data]);
       } catch (error) {
-         console.log();
+         console.log(error);
       }
    };
 
