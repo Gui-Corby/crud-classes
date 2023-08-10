@@ -68,11 +68,31 @@ export const PostProvider = ({ children }) => {
       }
    };
 
+   const postDelete = async (deletingId) => {
+      try {
+         const token = localStorage.getItem("@TOKEN");
+
+         await api.delete(`/news/${deletingId}`, {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         });
+
+         const newPostList = postList.filter((post) => post.id !== deletingId);
+         setPostList(newPostList);
+
+         alert("Exclusão realizada com sucesso!");
+      } catch (error) {
+         console.log(error);
+      }
+   };
+
    return (
       <PostContext.Provider
          value={{
             postCreate,
             postUpdate,
+            postDelete,
             postList,
             editingPost,
             setEditingPost,

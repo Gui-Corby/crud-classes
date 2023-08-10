@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { PostContext } from "../../providers/PostContext";
 
 export const PostList = () => {
-   const { postList, setEditingPost } = useContext(PostContext);
+   const { postList, setEditingPost, postDelete } = useContext(PostContext);
    return (
       <ul>
          {postList.map((post) => (
@@ -11,7 +11,7 @@ export const PostList = () => {
                <span>{post.category}</span>
                <p>{post.content}</p>
                <button onClick={() => setEditingPost(post)}>Editar</button>
-               <button>Excluir</button>
+               <button onClick={() => postDelete(post.id)}>Excluir</button>
             </li>
          ))}
       </ul>
