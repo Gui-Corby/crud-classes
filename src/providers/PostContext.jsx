@@ -13,16 +13,16 @@ export const PostProvider = ({ children }) => {
    console.log(postList);
 
    useEffect(() => {
-    const getPosts = async () => {
-        try {
+      const getPosts = async () => {
+         try {
             const { data } = await api.get("/news");
             setPostList(data);
-        } catch (error) {
+         } catch (error) {
             console.log(error);
-        }
-    }
-    getPosts();
-   }, [])
+         }
+      };
+      getPosts();
+   }, []);
 
    const postCreate = async (formData) => {
       try {
@@ -42,5 +42,9 @@ export const PostProvider = ({ children }) => {
       }
    };
 
-   return <PostContext.Provider value={{ postCreate, postList }}>{children}</PostContext.Provider>;
+   return (
+      <PostContext.Provider value={{ postCreate, postList }}>
+         {children}
+      </PostContext.Provider>
+   );
 };

@@ -4,3 +4,14 @@ export const api = axios.create({
     baseURL: "https://blog-fake-api.onrender.com",
     timeout: 8 * 1000,
 })
+
+const getPosts = async () => {
+    try {
+        const { data } = await api.get("/news");
+        setPostList(data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+getPosts();
+
