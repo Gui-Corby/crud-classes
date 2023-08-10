@@ -1,11 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import { api } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
    const [user, setUser] = useState(null);
    const [loading, setLoading] = useState(false);
+
+   const navigate = useNavigate();
 
    useEffect(() => {
       const userId = localStorage.getItem("@USERID");
@@ -20,17 +23,18 @@ export const UserProvider = ({ children }) => {
                },
             });
             setUser(data);
+            navigate("/");
          } catch (error) {
             console.log(error);
             localStorage.removeItem("@USERID");
             localStorage.removeItem("@TOKEN");
          } finally {
             setLoading(false);
-         }
-         autoLogin();
+         }         
       };
 
       if (userId && token) {
+         autoLogin();
       }
    }, []);
 
@@ -40,7 +44,8 @@ export const UserProvider = ({ children }) => {
          setUser(data.user);
          localStorage.setItem("@USERID", data.user.id);
          localStorage.setItem("@TOKEN", data.accessToken);
-         alert("Login efetuado com sucesso!");
+         navigate("/");
+         alert("Login efetuado com sucesso!");         
       } catch (error) {
          console.log(error);
       }
@@ -49,6 +54,7 @@ export const UserProvider = ({ children }) => {
    const userRegister = async (formData) => {
       try {
          await api.post("/users", formData);
+         navigate("/");
          alert("Cadastro efetuado com sucesso!");
       } catch (error) {
          console.log(error);
@@ -59,6 +65,7 @@ export const UserProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem("@USERID");
       localStorage.removeItem("@TOKEN");
+      navigate("/")
    };
 
    return <UserContext.Provider value={{ user, loading, userLogin, userRegister, userLogout }}>{children}</UserContext.Provider>;
