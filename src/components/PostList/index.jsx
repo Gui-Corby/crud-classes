@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { PostContext } from "../../providers/PostContext";
 
 export const PostList = () => {
-   const { postList } = useContext(PostContext);
+   const { postList, setEditingPost } = useContext(PostContext);
    return (
       <ul>
          {postList.map((post) => (
@@ -10,7 +10,7 @@ export const PostList = () => {
                <h3>{post.title} - {post.author}</h3>
                <span>{post.category}</span>
                <p>{post.content}</p>
-               <button>Editar</button>
+               <button onClick={() => setEditingPost(post)}>Editar</button>
                <button>Excluir</button>
             </li>
          ))}

@@ -9,20 +9,21 @@ export const PostProvider = ({ children }) => {
    const { user } = useContext(UserContext);
 
    const [postList, setPostList] = useState([]);
+   const [editingPost, setEditingPost] = useState(null);
 
-   console.log(postList);
+   console.log(editingPost);
 
    useEffect(() => {
-    const getPosts = async () => {
-        try {
+      const getPosts = async () => {
+         try {
             const { data } = await api.get("/news");
             setPostList(data);
-        } catch (error) {
+         } catch (error) {
             console.log(error);
-        }
-    }
-    getPosts();
-   }, [])
+         }
+      };
+      getPosts();
+   }, []);
 
    const postCreate = async (formData) => {
       try {
@@ -42,5 +43,42 @@ export const PostProvider = ({ children }) => {
       }
    };
 
-   return <PostContext.Provider value={{ postCreate, postList }}>{children}</PostContext.Provider>;
+   const postUpdate = async (formData) => {
+      try {
+         const token = localStorage.getItem("@TOKEN");
+
+         const { data } = await api.patch(`/news/${editingPost.id}`, formData, {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         });
+
+         const newPostList = postList.map((post) => {
+            if (post.id === editingPost.id) {
+               return data;
+            } else {
+               return post;
+            }
+         });
+
+         setPostList(newPostList);
+         setEditingPost(null);
+      } catch (error) {
+         console.log(error);
+      }
+   };
+
+   return (
+      <PostContext.Provider
+         value={{
+            postCreate,
+            postUpdate,
+            postList,
+            editingPost,
+            setEditingPost,
+         }}
+      >
+         {children}
+      </PostContext.Provider>
+   );
 };
