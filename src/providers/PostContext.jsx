@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 import { UserContext } from "./UserContext";
 import { api } from "../services/api";
@@ -11,6 +11,18 @@ export const PostProvider = ({ children }) => {
    const [postList, setPostList] = useState([]);
 
    console.log(postList);
+
+   useEffect(() => {
+    const getPosts = async () => {
+        try {
+            const { data } = await api.get("/news");
+            setPostList(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    getPosts();
+   }, [])
 
    const postCreate = async (formData) => {
       try {
@@ -30,5 +42,5 @@ export const PostProvider = ({ children }) => {
       }
    };
 
-   return <PostContext.Provider value={{ postCreate }}>{children}</PostContext.Provider>;
+   return <PostContext.Provider value={{ postCreate, postList }}>{children}</PostContext.Provider>;
 };
