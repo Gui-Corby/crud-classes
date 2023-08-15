@@ -5,7 +5,7 @@ export const PostList = () => {
    const { postList, setEditingPost, postDelete } = useContext(PostContext);
    return (
       <ul>
-         {postList.map((post) => (
+         {postList?.map((post) => (
             <li key={post.id}>
                <h3>{post.title} - {post.author}</h3>
                <span>{post.category}</span>
