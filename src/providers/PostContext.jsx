@@ -2,90 +2,74 @@ import { useContext, useEffect } from "react";
 import { createContext, useState } from "react";
 import { UserContext } from "./UserContext";
 import { api } from "../services/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const PostContext = createContext({});
 
 export const PostProvider = ({ children }) => {
    const { user } = useContext(UserContext);
-
-   const [postList, setPostList] = useState([]);
    const [editingPost, setEditingPost] = useState(null);
 
-   console.log(editingPost);
+   const { data: postList } = useQuery({
+      queryKey: ["posts"],
+      queryFn: async () => {
+         const { data } = await api.get("/news");
+         return data;
+      },
+   });
 
-   useEffect(() => {
-      const getPosts = async () => {
-         try {
-            const { data } = await api.get("/news");
-            setPostList(data);
-         } catch (error) {
-            console.log(error);
-         }
-      };
-      getPosts();
-   }, []);
+   const client = useQueryClient();
 
-   const postCreate = async (formData) => {
-      try {
+   const revalidate = () => {
+      client.invalidateQueries({ queryKey: ["posts"]});
+   }
+
+   const postCreate = useMutation({
+      mutationFn: async (formData) => {
          const newPost = { ...formData, author: user.name };
 
          const token = localStorage.getItem("@TOKEN");
 
-         const { data } = await api.post("/news", newPost, {
+         return await api.post("/news", newPost, {
             headers: {
                Authorization: `Bearer ${token}`,
             },
          });
+      },
+      onSuccess: revalidate,
+   });
 
-         setPostList([...postList, data]);
-      } catch (error) {
-         console.log(error);
-      }
-   };
-
-   const postUpdate = async (formData) => {
-      try {
+   const postUpdate = useMutation({
+      mutationFn: async (formData) => {
          const token = localStorage.getItem("@TOKEN");
 
-         const { data } = await api.patch(`/news/${editingPost.id}`, formData, {
+         return await api.patch(`/news/${editingPost.id}`, formData, {
             headers: {
                Authorization: `Bearer ${token}`,
             },
          });
-
-         const newPostList = postList.map((post) => {
-            if (post.id === editingPost.id) {
-               return data;
-            } else {
-               return post;
-            }
-         });
-
-         setPostList(newPostList);
+      }, 
+      onSuccess: () => {
          setEditingPost(null);
-      } catch (error) {
-         console.log(error);
+         revalidate();
       }
-   };
+   });   
 
-   const postDelete = async (deletingId) => {
-      try {
+   const postDelete = useMutation({
+      mutationFn: async (deletingId) => {
          const token = localStorage.getItem("@TOKEN");
 
-         await api.delete(`/news/${deletingId}`, {
+         return await api.delete(`/news/${deletingId}`, {
             headers: {
                Authorization: `Bearer ${token}`,
             },
          });
-
-         const newPostList = postList.filter((post) => post.id !== deletingId);
-         setPostList(newPostList);
-
+      },
+      onSuccess: () => {
          alert("Exclusão realizada com sucesso!");
-      } catch (error) {
-         console.log(error);
+         revalidate();
       }
-   };
+   })
 
    return (
       <PostContext.Provider
