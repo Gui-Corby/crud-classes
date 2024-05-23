@@ -5,16 +5,16 @@ import { LoginView } from "./LoginView";
 import { PostProvider } from "../../providers/PostContext";
 
 export const HomePage = () => {
-   const { user } = useContext(UserContext);
-   return (
-      <main>
-         {user ? (
-            <PostProvider>
-               <LoginView />
-            </PostProvider>
-         ) : (
-            <LogoutView />
-         )}
-      </main>
-   );
+  const { user } = useContext(UserContext);
+  return (
+    <main>
+      {user ? (
+        <PostProvider>
+          <LoginView />
+        </PostProvider>
+      ) : (
+        <LogoutView />
+      )}
+    </main>
+  );
 };

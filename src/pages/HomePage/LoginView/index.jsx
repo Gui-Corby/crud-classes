@@ -6,16 +6,16 @@ import { PostEditForm } from "../../../components/PostEditForm";
 import { PostContext } from "../../../providers/PostContext";
 
 export const LoginView = () => {
-    const { user, userLogout } = useContext(UserContext);  
+    const { user, userLogout } = useContext(UserContext);
     const { editingPost } = useContext(PostContext);
 
-    return(
+    return (
         <div>
             <h2>Seja muito bem vindo {user.name} - {user.email}</h2>
             <button onClick={userLogout}>Sair</button>
             <PostCreateForm />
             {editingPost ? <PostEditForm /> : null}
-            <PostList />            
+            <PostList />
         </div>
     )
 }
